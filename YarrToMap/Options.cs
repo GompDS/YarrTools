@@ -19,15 +19,15 @@ public class Options
     public Options()
     {
         DirectoryInfo? parentDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory[..^1]);
-        if (parentDirectory == null)
+        while (parentDirectory != null)
         {
-            throw new DirectoryNotFoundException("No parent directory.");
+            if (parentDirectory.Name.Equals("YARR"))
+            {
+                break;
+            }
+            parentDirectory = Directory.GetParent(parentDirectory.FullName);
         }
-        if (!parentDirectory.Name.Equals("YARR"))
-        {
-            throw new DirectoryNotFoundException("Parent directory should be the YARR folder.");
-        }
-        
+
         Console.WriteLine("Enter the map to transfer textures to (ex. 30_0):");
         string? input = Console.ReadLine();
         if (input == null)

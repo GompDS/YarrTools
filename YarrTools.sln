@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YarrTools", "YarrTools\YarrTools.csproj", "{2162889C-52B2-4DFB-81ED-2168F1E2DBB2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YarrToMap", "YarrToMap\YarrToMap.csproj", "{0BFDAA94-68BA-4C58-B487-3640B1E33821}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +12,9 @@ Global
 		{2162889C-52B2-4DFB-81ED-2168F1E2DBB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2162889C-52B2-4DFB-81ED-2168F1E2DBB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2162889C-52B2-4DFB-81ED-2168F1E2DBB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BFDAA94-68BA-4C58-B487-3640B1E33821}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BFDAA94-68BA-4C58-B487-3640B1E33821}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BFDAA94-68BA-4C58-B487-3640B1E33821}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BFDAA94-68BA-4C58-B487-3640B1E33821}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
