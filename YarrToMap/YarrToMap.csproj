@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Lib" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="SoulsFormats">
+        <HintPath>Lib\SoulsFormats.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="echo D|Xcopy /y $(ProjectDir)bin\debug\net6.0 &quot;C:\Program Files (x86)\Steam\steamapps\common\DARK SOULS III\Game\archthrones\YARR\YarrToMap&quot;" />
+    </Target>
+
+</Project>
