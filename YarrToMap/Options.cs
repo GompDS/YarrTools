@@ -25,6 +25,14 @@ public class Options
             {
                 break;
             }
+
+            if (parentDirectory.Name.Equals("YarrTools"))
+            {
+                string iniText = File.ReadAllText(parentDirectory.FullName + @"\GameDirectory.ini");
+                string gameDirectory = iniText[iniText.IndexOf('=')..][1..].Replace("\"", "");
+                GameMapDirectory = $"{gameDirectory}\\map";
+                GameObjectDirectory = $"{gameDirectory}\\obj";
+            }
             parentDirectory = Directory.GetParent(parentDirectory.FullName);
         }
 
@@ -83,14 +91,6 @@ public class Options
         }
         ModMapDirectory = $"{modDirectory.FullName}\\map";
         ModObjectDirectory = $"{modDirectory.FullName}\\obj";
-        
-        DirectoryInfo? gameDirectory = Directory.GetParent(modDirectory.FullName);
-        if (gameDirectory == null)
-        {
-            throw new DirectoryNotFoundException("No game directory.");
-        }
-        GameMapDirectory = $"{gameDirectory.FullName}\\map";
-        GameObjectDirectory = $"{gameDirectory.FullName}\\obj";
 
         YarrTextureDirectory = $"{parentDirectory}\\dds";
     }
