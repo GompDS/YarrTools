@@ -58,119 +58,44 @@ public static class Bxf4Utils
         binderA.Files.Remove(file);
     }
 
-    public static Tuple<BXF4, int>? SearchForTexture(this BXF4[] binders, string textureName)
-    {
-        foreach (BXF4 binder in binders)
-        {
-            foreach (BinderFile file in binder.Files)
-            {
-                if (file.Name.Equals($"{textureName}.tpf.dcx"))
-                {
-                    return new Tuple<BXF4, int>(binder, file.ID);
-                }
-            }
-        }
-
-        return null;
-    }
-    
-    public static int SearchForTexture(this BXF4 binder, string textureName)
+    public static bool SearchForTexture(this BXF4 binder, string searchFileName, out int foundIndex)
     {
         foreach (BinderFile file in binder.Files)
         {
-            if (file.Name.Equals($"{textureName}.tpf.dcx"))
+            string fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(file.Name));
+            string shortSearchFileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(searchFileName));
+            if (fileName.Equals(shortSearchFileName))
             {
-                return file.ID;
+                foundIndex = file.ID;
+                return true;
             }
         }
 
-        return -1;
-    }
-
-    public static void CopyTextureTo(this BXF4 smallestTextureBinder, string file, BXF4[] textureBinders)
-    {
-        byte format = 0;
-        if (file.Contains("_n.") || file.Contains("_n_l."))
-        {
-            format = 0x6A;
-        }
-
-        TPF.Texture newTexture = new(Path.GetFileNameWithoutExtension(file), format, 0, File.ReadAllBytes(file));
-        TPF newTpf = new();
-        newTpf.Textures.Add(newTexture);
-
-        Tuple<BXF4, int>? textureLocation =
-            textureBinders.SearchForTexture(Path.GetFileNameWithoutExtension(file));
-        if (textureLocation != null)
-        {
-            BinderFile newFile = new BinderFile(Binder.FileFlags.Flag1, textureLocation.Item2,
-                $"{Path.GetFileNameWithoutExtension(file)}.tpf.dcx",
-                DCX.Compress(newTpf.Write(), DCX.Type.DCX_DFLT_10000_44_9));
-            textureLocation.Item1.Files[textureLocation.Item2] = newFile;
-        }
-        else
-        {
-            BinderFile newFile = new BinderFile(Binder.FileFlags.Flag1, smallestTextureBinder.Files.Count,
-                $"{Path.GetFileNameWithoutExtension(file)}.tpf.dcx",
-                DCX.Compress(newTpf.Write(), DCX.Type.DCX_DFLT_10000_44_9));
-            smallestTextureBinder.Files.Add(newFile);
-        }
-    }
-    
-    /// <summary>
-    /// Used for copying _gi_ textures to the envTextureBinder from YARR.
-    /// </summary>
-    public static void CopyTextureTo(this BXF4 targetTextureBinder, string file)
-    {
-        TPF.Texture newTexture = new(Path.GetFileNameWithoutExtension(file), 0x66, 0, File.ReadAllBytes(file));
-        newTexture.Type = TPF.TexType.Cubemap;
-        TPF newTpf = new()
-        {
-            Flag2 = 0x03
-        };
-        newTpf.Textures.Add(newTexture);
-
-        int textureIndex = targetTextureBinder.SearchForTexture(Path.GetFileNameWithoutExtension(file));
-        if (textureIndex >= 0)
-        {
-            BinderFile newFile = new (Binder.FileFlags.Flag1, textureIndex,
-                $"{Path.GetFileNameWithoutExtension(file)}.tpf.dcx",
-                DCX.Compress(newTpf.Write(), DCX.Type.DCX_DFLT_10000_44_9));
-            targetTextureBinder.Files[textureIndex] = newFile;
-        }
-        else
-        {
-            BinderFile newFile = new (Binder.FileFlags.Flag1, targetTextureBinder.Files.Count,
-                $"{Path.GetFileNameWithoutExtension(file)}.tpf.dcx",
-                DCX.Compress(newTpf.Write(), DCX.Type.DCX_DFLT_10000_44_9));
-            targetTextureBinder.Files.Add(newFile);
-        }
-    }
-    
-    public static bool CopyTextureTo(this BXF4 smallestTextureBinder, BinderFile file, BXF4[] textureBinders)
-    {
-        string simpleName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(file.Name));
-
-        Tuple<BXF4, int>? textureLocation =
-            textureBinders.SearchForTexture(simpleName);
-        if (textureLocation == null)
-        {
-            file.ID = smallestTextureBinder.Files.Count;
-            smallestTextureBinder.Files.Add(file);
-            return true;
-        }
-
+        foundIndex = binder.Files.Count;
         return false;
     }
     
-    public static bool CopyTextureTo(this BXF4 targetTextureBinder, BinderFile file)
+    public static void CopyTextureTo(this BXF4 targetTextureBinder, BinderFile file, int fileId)
     {
-        string simpleName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(file.Name));
+        file.ID = fileId;
+        if (fileId < targetTextureBinder.Files.Count - 1)
+        {
+            targetTextureBinder.Files.RemoveAt(fileId);
+            targetTextureBinder.Files.Insert(fileId, file);
+            targetTextureBinder.FixFileIds();
+        }
+        else
+        {
+            targetTextureBinder.Files.Add(file);
+        }
+    }
 
-        if (targetTextureBinder.SearchForTexture(simpleName) >= 0) return false;
-        file.ID = targetTextureBinder.Files.Count;
-        targetTextureBinder.Files.Add(file);
-        return true;
+    public static void FixFileIds(this BXF4 textureBinder)
+    {
+        for (int i = 0; i < textureBinder.Files.Count; i++)
+        {
+            textureBinder.Files[i].ID = i;
+        }
     }
 
     public static int RemoveUnusedTextures(this BXF4 textureBinder, HashSet<string> usedTextures)
@@ -203,44 +128,13 @@ public static class Bxf4Utils
         return unusedTextureBytes;
     }
 
-    public static int GetUnusedTextureByteCount(this BXF4 textureBinder, HashSet<string> usedTextures, string[] tpfbhds, string[] tpfbdts)
-    {
-        int unusedTextureBytes = 0;
-        foreach (BinderFile nonLodFile in textureBinder
-                     .Files.Where(x => !x.Name.Contains("_l.") && 
-                                       !usedTextures.Contains(Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(x.Name)))))
-        {
-            unusedTextureBytes += nonLodFile.Bytes.Length;
-            string lodName = Path.GetFileName(nonLodFile.Name).Insert(Path.GetFileName(nonLodFile.Name).IndexOf(".", StringComparison.Ordinal), "_l");
-            BinderFile? lodFile = textureBinder.Files.FirstOrDefault(x => x.Name.Contains(lodName));
-                        
-            int j = 0;
-            while (lodFile == null && j < 4)
-            {
-                BXF4 otherGameTextureBinder = BXF4.Read(tpfbhds[j], tpfbdts[j]);
-                lodFile = otherGameTextureBinder.Files.FirstOrDefault(x => x.Name.Contains(lodName));
-                j++;
-            }
-
-            if (lodFile == null) continue;
-            unusedTextureBytes += lodFile.Bytes.Length;
-        }
-
-        return unusedTextureBytes;
-    }
-    
     public static int GetUnusedTextureByteCount(this BXF4 textureBinder, HashSet<string> usedTextures)
     {
         int unusedTextureBytes = 0;
-        foreach (BinderFile nonLodFile in textureBinder
-                     .Files.Where(x => !x.Name.Contains("_l.") && 
-                                       !usedTextures.Contains(Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(x.Name)))))
+        foreach (BinderFile file in textureBinder.Files.Where(x =>
+                     !usedTextures.Contains(Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(x.Name)).Replace("_l", ""))))
         {
-            unusedTextureBytes += nonLodFile.Bytes.Length;
-            string lodName = Path.GetFileName(nonLodFile.Name).Insert(Path.GetFileName(nonLodFile.Name).IndexOf(".", StringComparison.Ordinal), "_l");
-            BinderFile? lodFile = textureBinder.Files.FirstOrDefault(x => x.Name.Contains(lodName));
-            if (lodFile == null) continue;
-            unusedTextureBytes += lodFile.Bytes.Length;
+            unusedTextureBytes += file.Bytes.Length;
         }
 
         return unusedTextureBytes;

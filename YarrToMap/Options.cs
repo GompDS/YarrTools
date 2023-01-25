@@ -11,10 +11,10 @@ public class Options
     public string GameMapDirectory { get; }
     public string GameObjectDirectory { get; }
     public string YarrTextureDirectory { get; }
-    public bool UsePatch { get; }
-    public bool GetVanillaTextures { get; }
-    public bool UsePatchEnv { get; }
-    public bool GetVanillaTexturesEnv { get; }
+    public bool PatchRegular { get; }
+    public bool IncludeRegularTextures { get; }
+    public bool PatchLightmaps { get; }
+    public bool IncludeLightmaps { get; }
     public bool CreateBackups { get; }
     public Options()
     {
@@ -54,26 +54,26 @@ public class Options
             throw new IOException("Map and block Id was entered incorrectly.");
         }
 
-        UsePatch = YesNoQuestion(
-            $"Do you want to use the .patch extension for m{MapId}_000Xs ?",
+        PatchRegular = YesNoQuestion(
+            $"Do you want to use the .patch extension for regular textures?",
             $"The .patch extension will be used for m{MapId}_000Xs.",
             $"The .patch extension will not be used for m{MapId}_000Xs.");
-        if (!UsePatch)
+        if (!PatchRegular)
         {
-            GetVanillaTextures = YesNoQuestion(
-                $"Do you want used vanilla textures to be included in m{MapId}_000Xs ?",
+            IncludeRegularTextures = YesNoQuestion(
+                $"Do you want used regular textures to be included from the game files?",
                 $"Used vanilla textures will be included in m{MapId}_000Xs.",
                 $"Used vanilla textures will not be included in m{MapId}_000Xs.");
         }
             
-        UsePatchEnv = YesNoQuestion(
-            $"Do you want to use the .patch extension for gi_env_m{MapId} ?",
+        PatchLightmaps = YesNoQuestion(
+            $"Do you want to use the .patch extension for lightmaps?",
             $"The .patch extension will be used for gi_env_m{MapId}.",
             $"The .patch extension will not be used for gi_env_m{MapId}.");
-        if (!UsePatchEnv)
+        if (!PatchLightmaps)
         {
-            GetVanillaTexturesEnv = YesNoQuestion(
-                $"Do you want used vanilla textures to be included in gi_env_m{MapId} ?",
+            IncludeLightmaps = YesNoQuestion(
+                $"Do you want used lightmaps to be included from the game files?",
                 $"Used vanilla textures will be included in gi_env_m{MapId}.",
                 $"Used vanilla textures will not be included in gi_env_m{MapId}.");
         }
