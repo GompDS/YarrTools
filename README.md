@@ -10,3 +10,7 @@ NOTE: This has not been tested with ModEngine 2, but it probably works.
 
 ## YarrToMap
 Moves loose .dds files in YARR/dds into Dark Souls 3 texture binders.
+
+## Special Thanks
+- TKGP: Made SoulsFormats
+- Church Guard: Made YARR
