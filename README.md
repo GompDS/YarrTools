@@ -1,5 +1,5 @@
 # YarrTools
-Tools for Church Guard's YARR (Yet Another Repo Reloader).
+Companion tools for Church Guard's YARR (Yet Another Repo Reloader).
 
 How to setup:
 
