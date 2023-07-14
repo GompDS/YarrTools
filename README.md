@@ -1,5 +1,5 @@
 # YarrTools
-Companion tools for Church Guard's YARR (Yet Another Repo Reloader).
+Companion tools for Church Guard's YARR (Yet Another Repo Reloader) for Dark Souls 3.
 
 How to setup:
 
