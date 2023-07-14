@@ -80,7 +80,10 @@ public static class Bxf4Utils
         file.ID = fileId;
         if (fileId < targetTextureBinder.Files.Count - 1)
         {
-            targetTextureBinder.Files.RemoveAt(fileId);
+            if (targetTextureBinder.Files[fileId].Name.Equals(file.Name))
+            {
+                targetTextureBinder.Files.RemoveAt(fileId);
+            }
             targetTextureBinder.Files.Insert(fileId, file);
             targetTextureBinder.FixFileIds();
         }
@@ -105,23 +108,19 @@ public static class Bxf4Utils
         {
             textureBinder.Files[j].ID = j;
                         
-            if (textureBinder.Files[j].Name.Contains("_l."))
+            if (textureBinder.Files[j].Name.ToLower().EndsWith("_l.tpf.dcx"))
             {
-                if (!usedTextures.Contains(textureBinder.Files[j].Name.Split("_l.")[0]))
-                {
-                    unusedTextureBytes += textureBinder.Files[j].Bytes.Length;
-                    textureBinder.Files.Remove(textureBinder.Files[j]);
-                    j--;
-                }
+                if (usedTextures.Contains(textureBinder.Files[j].Name.ToLower()[..^10])) continue;
+                unusedTextureBytes += textureBinder.Files[j].Bytes.Length;
+                textureBinder.Files.Remove(textureBinder.Files[j]);
+                j--;
             }
             else
             {
-                if (!usedTextures.Contains(textureBinder.Files[j].Name.Split(".")[0]))
-                {
-                    unusedTextureBytes += textureBinder.Files[j].Bytes.Length;
-                    textureBinder.Files.Remove(textureBinder.Files[j]);
-                    j--;
-                }
+                if (usedTextures.Contains(textureBinder.Files[j].Name.ToLower()[..^8])) continue;
+                unusedTextureBytes += textureBinder.Files[j].Bytes.Length;
+                textureBinder.Files.Remove(textureBinder.Files[j]);
+                j--;
             }
         }
 

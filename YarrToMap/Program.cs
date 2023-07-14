@@ -17,12 +17,12 @@ static class Program
         Console.WriteLine($": Found {textureManager.UsedTextures.Count} unique textures (not counting LODs) used by this map.\n");
 
         List<BXF4> regularTextureBinders = textureManager.GetRegularTextureBinders(op.ModMapDirectory, op);
-        BXF4 lightmapBinder = textureManager.GetLightmapBinder(op.ModMapDirectory, op);
+        //BXF4 lightmapBinder = textureManager.GetLightmapBinder(op.ModMapDirectory, op);
 
         Console.WriteLine(": Removing unused textures from this map...");
 
         int unusedTextureBytes = regularTextureBinders.Sum(textureBinder => textureBinder.RemoveUnusedTextures(textureManager.UsedTextures));
-        unusedTextureBytes += lightmapBinder.RemoveUnusedTextures(textureManager.UsedTextures);
+        //unusedTextureBytes += lightmapBinder.RemoveUnusedTextures(textureManager.UsedTextures);
         
         Console.WriteLine($": Removed approximately {unusedTextureBytes / 1000} KB of unused textures.\n");
         
@@ -60,13 +60,13 @@ static class Program
         IEnumerable<string> files = Directory.EnumerateFiles(op.YarrTextureDirectory, "*.dds")
             .Where(x => !pattern.IsMatch(x));
         transferCount += textureManager.TransferYarrTextures(files, regularTextureBinders, op);
-        files = Directory.EnumerateFiles(op.YarrTextureDirectory, "*.dds")
+        /*files = Directory.EnumerateFiles(op.YarrTextureDirectory, "*.dds")
             .Where(x => pattern.IsMatch(x));
-        transferCount += textureManager.TransferYarrTextures(files, new List<BXF4> { lightmapBinder }, op);
+        transferCount += textureManager.TransferYarrTextures(files, new List<BXF4> { lightmapBinder }, op);*/
 
         Console.WriteLine($": Copied {transferCount} textures from YARR to this map.\n");
 
-        if (op.IncludeRegularTextures || op.IncludeLightmaps)
+        if (op.IncludeRegularTextures /*|| op.IncludeLightmaps*/)
         {
             Console.WriteLine(": Copying used vanilla textures from game files to this map...");
             transferCount = 0;
@@ -80,13 +80,13 @@ static class Program
                     unusedTextureBytes += vanillaTextureBinder.GetUnusedTextureByteCount(textureManager.UsedTextures);
                 }
             }
-
+            /*
             if (op.IncludeLightmaps)
             {
                 BXF4 vanillaEnvTextureBinder = textureManager.GetLightmapBinder(op.GameMapDirectory, op);
                 transferCount += textureManager.TransferVanillaTextures(vanillaEnvTextureBinder, new List<BXF4> {lightmapBinder}, op);
                 unusedTextureBytes += vanillaEnvTextureBinder.GetUnusedTextureByteCount(textureManager.UsedTextures);
-            }
+            }*/
 
             Console.WriteLine($": Copied {transferCount} vanilla textures from game files to this map.");
             Console.WriteLine($": Approximately {unusedTextureBytes / 1000} KB of vanilla textures were unused.\n");
@@ -106,7 +106,7 @@ static class Program
             }
         }
 
-        if (lightmapBinder.Files.Count > 0)
+        /*if (lightmapBinder.Files.Count > 0)
         {
             string pathBase = $"{op.ModMapDirectory}\\m{op.MapId}\\gi_env_m{op.MapId}";
             if (op.PatchLightmaps)
@@ -117,7 +117,7 @@ static class Program
             {
                 lightmapBinder.Write($"{pathBase}.tpfbhd", $"{pathBase}.tpfbdt");
             }
-        }
+        }*/
 
         Console.WriteLine(": Texture transfer complete!");
         Console.WriteLine("Press any key to exit...");

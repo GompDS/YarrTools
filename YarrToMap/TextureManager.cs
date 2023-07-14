@@ -151,6 +151,9 @@ public class TextureManager
                             textureBinder.Write(bhdPath + ".bak", bdtPath + ".bak");
                         }
 
+                        textureBinder.Files = textureBinder.Files.DistinctBy(x => x.Name).ToList();
+
+                        textureBinder.Files = textureBinder.Files.OrderBy(x => x.ID).ToList();
                         regularTextureBinders.Add(textureBinder);
                         continue;
                     }
@@ -204,14 +207,24 @@ public class TextureManager
     public int TransferYarrTextures(IEnumerable<string> files, List<BXF4> modTextureBinders, Options op)
     {
         int transferCount = 0;
-        foreach (string filePath in files.Where(x => UsedTextures.Contains(Path.GetFileNameWithoutExtension(x))))
+        foreach (string filePath in files.Where(x => UsedTextures.Contains(Path.GetFileNameWithoutExtension(x).ToLower())))
         {
             BinderFile file = CreateTextureBinderFile(filePath);
             string fileName = Path.GetFileNameWithoutExtension(filePath);
-            if (fileName.EndsWith("_l"))
+            if (fileName.Equals("AET002_554_n_l"))
             {
-                int foundIndex = -1;
-                BXF4? targetTextureBinder =
+                Console.WriteLine();
+            }
+            int foundIndex = -1;
+            BXF4? targetTextureBinder =
+                modTextureBinders.FirstOrDefault(x => x.SearchForTexture(fileName, out foundIndex));
+            if (targetTextureBinder != null)
+            {
+                targetTextureBinder.CopyTextureTo(file, foundIndex);
+            }
+            else if (fileName.EndsWith("_l"))
+            {
+                targetTextureBinder =
                     modTextureBinders.FirstOrDefault(x => x.SearchForTexture(fileName[..^2], out foundIndex));
                 if (targetTextureBinder != null)
                 {
@@ -226,8 +239,7 @@ public class TextureManager
             }
             else
             {
-                int foundIndex = -1;
-                BXF4? targetTextureBinder =
+                targetTextureBinder =
                     modTextureBinders.FirstOrDefault(x => x.SearchForTexture(fileName + "_l", out foundIndex));
                 if (targetTextureBinder != null)
                 {
@@ -284,9 +296,9 @@ public class TextureManager
     {
         int transferCount = 0;
         foreach (BinderFile file in vanillaTextureBinder.Files.Where(x =>
-                     modTextureBinders.All(y => !y.Files.Any(z => z.Name.Equals(x.Name))) &&
+                     modTextureBinders.All(y => !y.Files.Any(z => z.Name.ToLower().Equals(x.Name.ToLower()))) &&
                      UsedTextures.Contains(
-                         Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(x.Name)))))
+                         Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(x.Name).ToLower()))))
         {
             string fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(file.Name));
             if (fileName.EndsWith("_l"))

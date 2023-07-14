@@ -15,7 +15,7 @@ public static class HashSetUtils
             TPF tpf = TPF.Read(tpfFile.Bytes);
             foreach (TPF.Texture tex in tpf.Textures)
             {
-                localTextures.Add(Path.GetFileNameWithoutExtension(tex.Name));
+                localTextures.Add(Path.GetFileNameWithoutExtension(tex.Name).ToLower());
             }
         }
 
@@ -27,8 +27,8 @@ public static class HashSetUtils
             {
                 foreach (FLVER2.Texture tex in mat.Textures.Where(x => x.Path.Length > 0 && !localTextures.Contains(Path.GetFileNameWithoutExtension(x.Path))))
                 {
-                    currentTextureSet.Add(Path.GetFileNameWithoutExtension(tex.Path));
-                    currentTextureSet.Add(Path.GetFileNameWithoutExtension(tex.Path) + "_l");
+                    currentTextureSet.Add(Path.GetFileNameWithoutExtension(tex.Path).ToLower());
+                    currentTextureSet.Add(Path.GetFileNameWithoutExtension(tex.Path).ToLower() + "_l");
                 }
             }
         }

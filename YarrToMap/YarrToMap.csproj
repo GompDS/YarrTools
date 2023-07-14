@@ -5,6 +5,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Version>1.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,8 +23,8 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Copy SourceFiles="@(CopyGamePath)" DestinationFolder="C:\Program Files (x86)\Steam\steamapps\common\DARK SOULS III\Game\archthrones\YARR\YarrTools" />
-      <Exec Command="echo D|Xcopy /y $(ProjectDir)bin\debug\net6.0 &quot;C:\Program Files (x86)\Steam\steamapps\common\DARK SOULS III\Game\archthrones\YARR\YarrTools\YarrToMap&quot;" />
+        <Copy SourceFiles="@(CopyGamePath)" DestinationFolder="C:\Program Files (x86)\Steam\steamapps\common\DARK SOULS III\Game\archthrones\_archthrones\YARR\YarrTools" />
+      <Exec Command="echo D|Xcopy /y $(ProjectDir)bin\debug\net6.0 &quot;C:\Program Files (x86)\Steam\steamapps\common\DARK SOULS III\Game\archthrones\_archthrones\YARR\YarrTools\YarrToMap&quot;" />
     </Target>
 
 </Project>
